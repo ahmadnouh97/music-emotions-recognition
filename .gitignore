@@ -1,0 +1,13 @@
+**/**/.ipynb_checkpoints
+**/**/__pycache__
+**/**/.vscode
+**/**/.idea
+**/**/.dvc
+**/**/*.exe
+**/**/*.csv
+**/**/*.lrc
+**/**/*.mp3
+**/**/*.wav
+**/**/*.h5
+**/**/*.pkl
+**/**/*.exe

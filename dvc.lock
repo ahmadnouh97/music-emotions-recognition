@@ -1,0 +1,84 @@
+prepare:
+  cmd: python ./Code/prepare.py ./Data/PMEmo2019/songs ./Data/PMEmo2019/songs_wav
+  deps:
+  - path: ./Code/prepare.py
+    md5: b7448900b1f99707b73624182636b669
+  - path: ./Data/PMEmo2019/songs
+    md5: 7ffae63872f5dd0c2385b931b1c1c83a.dir
+  outs:
+  - path: ./Data/PMEmo2019/songs_wav
+    md5: e365883a766af9d209a4268c6daaa32c.dir
+featurize:
+  cmd: python ./Code/featurize.py ./Data/PMEmo2019/songs_wav ./Data/PMEmo2019/features/static_features.csv
+  deps:
+  - path: ./Code/featurize.py
+    md5: 8423b9f8700af33fb967e679e766bbeb
+  - path: ./Data/PMEmo2019/songs_wav
+    md5: e365883a766af9d209a4268c6daaa32c.dir
+  outs:
+  - path: ./Data/PMEmo2019/features/static_features.csv
+    md5: ec4123dfd06d7b034b6c6ef7d7f31843
+split_data:
+  cmd: python ./Code/split_data.py ./Data/PMEmo2019/features/static_features.csv ./Data/PMEmo2019/annotations/static_annotations.csv
+  deps:
+  - path: ./Code/split_data.py
+    md5: c4a4453b8d137a94dee5adabc459b6e5
+  - path: ./Data/PMEmo2019/annotations/static_annotations.csv
+    md5: 742be2e6aeeb16396d09b7f5eff47bdc
+  - path: ./Data/PMEmo2019/features/static_features.csv
+    md5: ec4123dfd06d7b034b6c6ef7d7f31843
+  outs:
+  - path: ./Data/PMEmo2019/prepared/x_test.pkl
+    md5: b462536fea0e65291ceedeaae81c12c3
+  - path: ./Data/PMEmo2019/prepared/x_train.pkl
+    md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
+  - path: ./Data/PMEmo2019/prepared/y_test.pkl
+    md5: 5798f4fd60e3b170f23a8121b6dab057
+  - path: ./Data/PMEmo2019/prepared/y_train.pkl
+    md5: 90d6a869796b639eb9287025fad8076a
+train:
+  cmd: python ./Code/train.py
+  deps:
+  - path: ./Code/train.py
+    md5: 6ee4ddbfd8fc68f6df40f766d9978825
+  - path: ./Data/PMEmo2019/prepared/x_test.pkl
+    md5: b462536fea0e65291ceedeaae81c12c3
+  - path: ./Data/PMEmo2019/prepared/x_train.pkl
+    md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
+  - path: ./Data/PMEmo2019/prepared/y_test.pkl
+    md5: 5798f4fd60e3b170f23a8121b6dab057
+  - path: ./Data/PMEmo2019/prepared/y_train.pkl
+    md5: 90d6a869796b639eb9287025fad8076a
+  params:
+    params.yaml:
+      train.batch_size: 10
+      train.epochs: 300
+      train.hidden_units:
+      - 8
+      - 4
+      - 1
+      train.learning_rate: 0.001
+      train.loss: mean_squared_error
+      train.regularization_factor: 0.01
+      train.validation_split: 0.2
+  outs:
+  - path: ./Modeling/model.h5
+    md5: 01d8bf64a5ff2935014135a2e4c45f8b
+  - path: ./Plots/learning_curve_loss.png
+    md5: 79f21f45dd9e0c2353289c05ca7f179a
+  - path: ./Plots/learning_curve_rmse.png
+    md5: ee0fe871890c97ccc335ef439423a1c6
+evaluate:
+  cmd: python ./Code/evaluate.py ./Metrics/metrics.json
+  deps:
+  - path: ./Code/evaluate.py
+    md5: 72a9bcf127aeb429bd0da92594be67b4
+  - path: ./Data/PMEmo2019/prepared/x_test.pkl
+    md5: b462536fea0e65291ceedeaae81c12c3
+  - path: ./Data/PMEmo2019/prepared/y_test.pkl
+    md5: 5798f4fd60e3b170f23a8121b6dab057
+  - path: ./Modeling/model.h5
+    md5: d330ac9c08269c1444a6b95429be193c
+  outs:
+  - path: ./Metrics/metrics.json
+    md5: 5b89e05147a328f46c3afb2465576e93
