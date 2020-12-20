@@ -57,17 +57,17 @@ train:
       - 8
       - 4
       - 1
-      train.learning_rate: 0.006
+      train.learning_rate: 0.003
       train.loss: mean_absolute_error
       train.regularization_factor: 0.01
-      train.validation_split: 0.1
+      train.validation_split: 0.2
   outs:
   - path: ./Modeling/model.h5
-    md5: acdee8c7d208958b9a2297f9276d7d90
+    md5: 7533b5fb051dbfceb3af14ddbaadd991
   - path: ./Plots/learning_curve_loss.png
-    md5: 5e380d3a4e899b865a2250080e610df3
+    md5: 3e70aa354344fb790c52117fbe6a482f
   - path: ./Plots/learning_curve_rmse.png
-    md5: a26e689300b74156850f7a3b3c601e25
+    md5: e4f8c6a9c2b3947eab35a2f74bab830f
 evaluate:
   cmd: python ./Code/evaluate.py ./Metrics/metrics.json
   deps:
@@ -78,7 +78,7 @@ evaluate:
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
     md5: 5798f4fd60e3b170f23a8121b6dab057
   - path: ./Modeling/model.h5
-    md5: 41490ac1598a60b8e248594bb08faeb4
+    md5: dfb509e14d93812844779218b311462e
   outs:
   - path: ./Metrics/metrics.json
-    md5: 387688f60c86237019ac33b91423988d
+    md5: 37fb07abb61f5532424002a146876662
