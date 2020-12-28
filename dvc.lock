@@ -22,7 +22,7 @@ split_data:
   cmd: python ./Code/split_data.py ./Data/PMEmo2019/features/static_features.csv ./Data/PMEmo2019/annotations/static_annotations.csv
   deps:
   - path: ./Code/split_data.py
-    md5: 786115ce1dd0a92a16f44c3538eaeeeb
+    md5: 615f2c78437c0d7a9983861c8f2c09f3
   - path: ./Data/PMEmo2019/annotations/static_annotations.csv
     md5: 742be2e6aeeb16396d09b7f5eff47bdc
   - path: ./Data/PMEmo2019/features/static_features.csv
@@ -33,40 +33,52 @@ split_data:
   - path: ./Data/PMEmo2019/prepared/x_train.pkl
     md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 54c68372f3f4e03e26ed9f4980fdd2a5
+    md5: 7604cc5b6464687fab8a8f434226750e
   - path: ./Data/PMEmo2019/prepared/y_train.pkl
-    md5: c212aaa510d6cfa30576da88196e375a
+    md5: 44887b5f0fa27868eab918105915d712
 train:
   cmd: python ./Code/train.py
   deps:
   - path: ./Code/train.py
-    md5: b05ce71fcbbe3c0e34531b9a2c8beb27
+    md5: 6ee4ddbfd8fc68f6df40f766d9978825
   - path: ./Data/PMEmo2019/prepared/x_test.pkl
     md5: b462536fea0e65291ceedeaae81c12c3
   - path: ./Data/PMEmo2019/prepared/x_train.pkl
     md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 54c68372f3f4e03e26ed9f4980fdd2a5
+    md5: 7604cc5b6464687fab8a8f434226750e
   - path: ./Data/PMEmo2019/prepared/y_train.pkl
-    md5: c212aaa510d6cfa30576da88196e375a
+    md5: 44887b5f0fa27868eab918105915d712
   params:
     params.yaml:
-      train.max_depth: 100
-      train.n_estimators: 10
+      train.batch_size: 10
+      train.epochs: 300
+      train.hidden_units:
+      - 8
+      - 4
+      - 1
+      train.learning_rate: 0.003
+      train.loss: mean_absolute_error
+      train.regularization_factor: 0.01
+      train.validation_split: 0.2
   outs:
-  - path: ./Modeling/model.pkl
-    md5: 85f2a0bef6c720f6c706478322068179
+  - path: ./Modeling/model.h5
+    md5: 0d8f35989a5a90a4e35417b9f229fd73
+  - path: ./Plots/learning_curve_loss.png
+    md5: 404ffe98c0eb7e17985e70b279120481
+  - path: ./Plots/learning_curve_rmse.png
+    md5: 15049c95f9f697e06b65b55562f87f99
 evaluate:
   cmd: python ./Code/evaluate.py ./Metrics/metrics.json
   deps:
   - path: ./Code/evaluate.py
-    md5: d5df3d5ce1e34a11325ef12cc5d384f1
+    md5: 72a9bcf127aeb429bd0da92594be67b4
   - path: ./Data/PMEmo2019/prepared/x_test.pkl
     md5: b462536fea0e65291ceedeaae81c12c3
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 54c68372f3f4e03e26ed9f4980fdd2a5
-  - path: ./Modeling/model.pkl
-    md5: 85f2a0bef6c720f6c706478322068179
+    md5: 7604cc5b6464687fab8a8f434226750e
+  - path: ./Modeling/model.h5
+    md5: 1ddb1e7aa664e0382bc00f67c14bad58
   outs:
   - path: ./Metrics/metrics.json
-    md5: 73fdd2c18a5e130e769683f51b767cfe
+    md5: 8963136795656bfdc49f26c99ffb9fc5

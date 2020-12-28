@@ -34,17 +34,24 @@ stages:
     - ./Data/PMEmo2019/prepared/y_test.pkl
     - ./Data/PMEmo2019/prepared/y_train.pkl
     params:
-    - train.n_estimators
-    - train.max_depth
+    - train.batch_size
+    - train.epochs
+    - train.hidden_units
+    - train.learning_rate
+    - train.loss
+    - train.regularization_factor
+    - train.validation_split
     outs:
-    - ./Modeling/model.pkl
+    - ./Modeling/model.h5
+    - ./Plots/learning_curve_loss.png
+    - ./Plots/learning_curve_rmse.png
   evaluate:
     cmd: python ./Code/evaluate.py ./Metrics/metrics.json
     deps:
     - ./Code/evaluate.py
     - ./Data/PMEmo2019/prepared/x_test.pkl
     - ./Data/PMEmo2019/prepared/y_test.pkl
-    - ./Modeling/model.pkl
+    - ./Modeling/model.h5
     metrics:
     - ./Metrics/metrics.json:
         cache: false
