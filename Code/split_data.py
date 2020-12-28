@@ -34,7 +34,7 @@ def prepare_data():
     # y1 = np.array(arousal_mean).reshape(-1, 1)
     # y2 = np.array(valence_mean).reshape(-1, 1)
     # y = np.hstack([y1, y2])
-    y = np.array(arousal_mean)
+    y = np.array(valence_mean)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
 
     scaler = StandardScaler()
