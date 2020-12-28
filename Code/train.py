@@ -28,15 +28,14 @@ def create_model(features_num: int, learning_rate: float, regularization_factor:
     model.compile(optimizer=optimizers.Adam(lr=learning_rate), loss=params['loss'],
                   metrics=[metrics.RootMeanSquaredError(),
                            metrics.MeanSquaredLogarithmicError(),
-                           metrics.MeanAbsoluteError(), ])
+                           metrics.MeanAbsoluteError()])
     model.summary()
     return model
 
 
 def train(model: Model, x_train, y_train):
-    model_check_point_cb = ModelCheckpoint(filepath=str(Config.MODEL_PATH / 'model.h5'),
+    model_check_point_cb = ModelCheckpoint(filepath=str(Config.MODEL_FILE),
                                            monitor='val_loss',
-                                           save_weights_only=True,
                                            save_best_only=True)
     early_stop_cb = EarlyStopping(monitor='val_loss', mode='min', min_delta=0.00001, patience=8)
     reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss', mode='min', patience=2, factor=0.1)

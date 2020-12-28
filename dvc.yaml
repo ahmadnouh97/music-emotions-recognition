@@ -42,7 +42,7 @@ stages:
     - train.regularization_factor
     - train.validation_split
     outs:
-    - ./Modeling/model.h5
+    - ./Modeling/arousal_model.h5
     - ./Plots/learning_curve_loss.png
     - ./Plots/learning_curve_rmse.png
   evaluate:
@@ -51,7 +51,7 @@ stages:
     - ./Code/evaluate.py
     - ./Data/PMEmo2019/prepared/x_test.pkl
     - ./Data/PMEmo2019/prepared/y_test.pkl
-    - ./Modeling/model.h5
+    - ./Modeling/arousal_model.h5
     metrics:
     - ./Metrics/metrics.json:
         cache: false

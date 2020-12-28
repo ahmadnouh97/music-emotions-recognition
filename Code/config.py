@@ -11,6 +11,7 @@ class Config:
     FEATURES_FILE = str(FEATURES_PATH / Path('static_features.csv'))
     ANNOTATIONS_FILE = str(DATA_PATH / Path('annotations/static_annotations.csv'))
     MODEL_PATH = Path('Modeling')
+    MODEL_FILE = MODEL_PATH / 'arousal_model.h5'
     PLOTS_PATH = Path('Plots')
     METRICS_PATH = Path('Metrics')
     PARAMS_PATH = Path('params.yaml')
