@@ -40,7 +40,7 @@ train:
   cmd: python ./Code/train.py
   deps:
   - path: ./Code/train.py
-    md5: 6ee4ddbfd8fc68f6df40f766d9978825
+    md5: 103b371bea22dbdf373a7535ad4653ca
   - path: ./Data/PMEmo2019/prepared/x_test.pkl
     md5: b462536fea0e65291ceedeaae81c12c3
   - path: ./Data/PMEmo2019/prepared/x_train.pkl
@@ -62,23 +62,23 @@ train:
       train.regularization_factor: 0.01
       train.validation_split: 0.2
   outs:
-  - path: ./Modeling/model.h5
-    md5: 0d8f35989a5a90a4e35417b9f229fd73
+  - path: ./Modeling/valence_model.h5
+    md5: ad6cda50318cf31eb9ac583abe3d1e92
   - path: ./Plots/learning_curve_loss.png
-    md5: 404ffe98c0eb7e17985e70b279120481
+    md5: 25e98a7ac06850784706ec53d049c821
   - path: ./Plots/learning_curve_rmse.png
-    md5: 15049c95f9f697e06b65b55562f87f99
+    md5: d49fcc1fb786f7b4ff101fa1d450642e
 evaluate:
   cmd: python ./Code/evaluate.py ./Metrics/metrics.json
   deps:
   - path: ./Code/evaluate.py
-    md5: 72a9bcf127aeb429bd0da92594be67b4
+    md5: 969dcba57ace8ae10874ec1d7ccc4976
   - path: ./Data/PMEmo2019/prepared/x_test.pkl
     md5: b462536fea0e65291ceedeaae81c12c3
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
     md5: 7604cc5b6464687fab8a8f434226750e
-  - path: ./Modeling/model.h5
-    md5: 1ddb1e7aa664e0382bc00f67c14bad58
+  - path: ./Modeling/valence_model.h5
+    md5: 0c50c2234e7bb11760643e0f91c856ac
   outs:
   - path: ./Metrics/metrics.json
-    md5: 8963136795656bfdc49f26c99ffb9fc5
+    md5: caa3345523246641265ee33960e64f3d
