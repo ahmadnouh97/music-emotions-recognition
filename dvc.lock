@@ -78,7 +78,7 @@ evaluate:
   - path: ./Data/PMEmo2019/prepared/y_test.pkl
     md5: 5798f4fd60e3b170f23a8121b6dab057
   - path: ./Modeling/arousal_model.h5
-    md5: bd76e011d4fe6de88267c4e8a9bb5238
+    md5: cbd42761ed836ffae7503b0c06b8d3b9
   outs:
   - path: ./Metrics/metrics.json
-    md5: 14974541264bf44390ac6262b5749b06
+    md5: 50f6bcbe9b2500eb21140d2b44af9d07
