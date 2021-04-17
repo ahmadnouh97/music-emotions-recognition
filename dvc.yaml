@@ -1,57 +1,88 @@
 stages:
-  prepare:
-    cmd: python ./Code/prepare.py ./Data/PMEmo2019/songs ./Data/PMEmo2019/songs_wav
+  prepare_happy:
+    cmd: python ./Code/prepare.py ./Data/arabic/happy/mp3 ./Data/arabic/happy/wav
     deps:
     - ./Code/prepare.py
-    - ./Data/PMEmo2019/songs
+    - ./Data/arabic/happy/mp3
     outs:
-    - ./Data/PMEmo2019/songs_wav
-  featurize:
-    cmd: python ./Code/featurize.py ./Data/PMEmo2019/songs_wav ./Data/PMEmo2019/features/static_features.csv
+    - ./Data/arabic/happy/wav
+
+  prepare_happy_lyrics:
+    cmd: python ./Code/prepare_lyrics.py ./Data/arabic/happy/lyrics ./Data/arabic/happy/processed_lyrics
+    deps:
+    - ./Code/prepare_lyrics.py
+    - ./Data/arabic/happy/lyrics
+    outs:
+    - ./Data/arabic/happy/processed_lyrics
+
+  prepare_loud:
+    cmd: python ./Code/prepare.py ./Data/arabic/loud/mp3 ./Data/arabic/loud/wav
+    deps:
+    - ./Code/prepare.py
+    - ./Data/arabic/loud/mp3
+    outs:
+    - ./Data/arabic/loud/wav
+  
+  prepare_loud_lyrics:
+    cmd: python ./Code/prepare_lyrics.py ./Data/arabic/loud/lyrics ./Data/arabic/loud/processed_lyrics
+    deps:
+    - ./Code/prepare_lyrics.py
+    - ./Data/arabic/loud/lyrics
+    outs:
+    - ./Data/arabic/loud/processed_lyrics
+
+  featurize_happy:
+    cmd: python ./Code/featurize.py ./Data/arabic/happy/wav ./Data/arabic/happy/features/sound_features.csv
     deps:
     - ./Code/featurize.py
-    - ./Data/PMEmo2019/songs_wav
+    - ./Data/arabic/happy/wav
     outs:
-    - ./Data/PMEmo2019/features/static_features.csv
-  split_data:
-    cmd: python ./Code/split_data.py ./Data/PMEmo2019/features/static_features.csv
-      ./Data/PMEmo2019/annotations/static_annotations.csv
+    - ./Data/arabic/happy/features/sound_features.csv
+
+  featurize_loud:
+    cmd: python ./Code/featurize.py ./Data/arabic/loud/wav ./Data/arabic/loud/features/sound_features.csv
+    deps:
+    - ./Code/featurize.py
+    - ./Data/arabic/loud/wav
+    outs:
+    - ./Data/arabic/loud/features/sound_features.csv
+  
+  aggregate_happy_features:
+    cmd: python ./Code/aggregate_features.py ./Data/arabic/happy/features ./Data/arabic/happy/processed_lyrics happy
+    deps:
+      - ./Code/aggregate_features.py
+      - ./Data/arabic/happy/features/sound_features.csv
+      - ./Data/arabic/happy/processed_lyrics
+    outs:
+      - ./Data/arabic/happy/features/features.csv
+
+  aggregate_loud_features:
+    cmd: python ./Code/aggregate_features.py ./Data/arabic/loud/features ./Data/arabic/loud/processed_lyrics loud
+    deps:
+      - ./Code/aggregate_features.py
+      - ./Data/arabic/loud/features/sound_features.csv
+      - ./Data/arabic/loud/processed_lyrics
+    outs:
+      - ./Data/arabic/loud/features/features.csv
+  
+  split_happy_data:
+    cmd: python ./Code/split_data.py ./Data/arabic/happy/features/features.csv ./Data/arabic/happy/prepared_data
     deps:
     - ./Code/split_data.py
-    - ./Data/PMEmo2019/annotations/static_annotations.csv
-    - ./Data/PMEmo2019/features/static_features.csv
+    - ./Data/arabic/happy/features/features.csv
     outs:
-    - ./Data/PMEmo2019/prepared/x_test.pkl
-    - ./Data/PMEmo2019/prepared/x_train.pkl
-    - ./Data/PMEmo2019/prepared/y_test.pkl
-    - ./Data/PMEmo2019/prepared/y_train.pkl
-  train:
-    cmd: python ./Code/train.py
+    - ./Data/arabic/happy/prepared_data/x_train.csv
+    - ./Data/arabic/happy/prepared_data/x_train.csv
+    - ./Data/arabic/happy/prepared_data/y_test.csv
+    - ./Data/arabic/happy/prepared_data/y_train.csv
+
+  split_loud_data:
+    cmd: python ./Code/split_data.py ./Data/arabic/loud/features/features.csv ./Data/arabic/loud/prepared_data
     deps:
-    - ./Code/train.py
-    - ./Data/PMEmo2019/prepared/x_test.pkl
-    - ./Data/PMEmo2019/prepared/x_train.pkl
-    - ./Data/PMEmo2019/prepared/y_test.pkl
-    - ./Data/PMEmo2019/prepared/y_train.pkl
-    params:
-    - train.batch_size
-    - train.epochs
-    - train.hidden_units
-    - train.learning_rate
-    - train.loss
-    - train.regularization_factor
-    - train.validation_split
+    - ./Code/split_data.py
+    - ./Data/arabic/loud/features/features.csv
     outs:
-    - ./Modeling/model.h5
-    - ./Plots/learning_curve_loss.png
-    - ./Plots/learning_curve_rmse.png
-  evaluate:
-    cmd: python ./Code/evaluate.py ./Metrics/metrics.json
-    deps:
-    - ./Code/evaluate.py
-    - ./Data/PMEmo2019/prepared/x_test.pkl
-    - ./Data/PMEmo2019/prepared/y_test.pkl
-    - ./Modeling/model.h5
-    metrics:
-    - ./Metrics/metrics.json:
-        cache: false
+    - ./Data/arabic/loud/prepared_data/x_train.csv
+    - ./Data/arabic/loud/prepared_data/x_train.csv
+    - ./Data/arabic/loud/prepared_data/y_test.csv
+    - ./Data/arabic/loud/prepared_data/y_train.csv

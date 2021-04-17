@@ -34,7 +34,7 @@ def extract_features(files, extract_to, verbose=True):
     features_df.to_csv(extract_to, index=False)
 
 
-Config.FEATURES_PATH.mkdir(parents=True, exist_ok=True)
+# Config.FEATURES_PATH.mkdir(parents=True, exist_ok=True)
 
 extract_features(
     files=os.listdir(str(SONGS_WAV_PATH)),
