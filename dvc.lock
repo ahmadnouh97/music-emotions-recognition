@@ -45,34 +45,51 @@ train:
   cmd: python ./Code/train.py
   deps:
   - path: ./Code/train.py
-    md5: 6ee4ddbfd8fc68f6df40f766d9978825
-  - path: ./Data/PMEmo2019/prepared/x_test.pkl
-    md5: b462536fea0e65291ceedeaae81c12c3
-  - path: ./Data/PMEmo2019/prepared/x_train.pkl
-    md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
-  - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 5798f4fd60e3b170f23a8121b6dab057
-  - path: ./Data/PMEmo2019/prepared/y_train.pkl
-    md5: 90d6a869796b639eb9287025fad8076a
+    md5: 1188faf461ce79446bf03cb82c105172
+  - path: ./Data/arabic/happy/prepared_data/x_test.csv
+    md5: 96b918ed53bc8abce5faa07aea6bf8f5
+  - path: ./Data/arabic/happy/prepared_data/x_train.csv
+    md5: f490a28ddee0c45fa9000fa542691bf3
+  - path: ./Data/arabic/happy/prepared_data/y_test.csv
+    md5: 24b3c2a84296645e649cebb7929a0817
+  - path: ./Data/arabic/happy/prepared_data/y_train.csv
+    md5: 0cf856d45d314ecdebb0716979e31476
+  - path: ./Data/arabic/loud/prepared_data/x_test.csv
+    md5: 13d037a90fd25f332221a2fd5faf02bb
+  - path: ./Data/arabic/loud/prepared_data/x_train.csv
+    md5: c5372269d1aec955b2e87eda5f7fb5cc
+  - path: ./Data/arabic/loud/prepared_data/y_test.csv
+    md5: 4e20a927916f8341c17ad09381bdca83
+  - path: ./Data/arabic/loud/prepared_data/y_train.csv
+    md5: 2ead048f8a5ff8b2502b7bacfaf6f5a7
+  - path: ./Data/arabic/sad/prepared_data/x_test.csv
+    md5: d306a4a7faa76d895ecae1c6aa39d727
+  - path: ./Data/arabic/sad/prepared_data/x_train.csv
+    md5: c7e15ae14d8fa611a104cdbc23d4b3a9
+  - path: ./Data/arabic/sad/prepared_data/y_test.csv
+    md5: b5e69a514bb107c6a8b43aa50af6e34a
+  - path: ./Data/arabic/sad/prepared_data/y_train.csv
+    md5: cc76b816cd5a6db96870c43d879fb5aa
   params:
     params.yaml:
-      train.batch_size: 10
-      train.epochs: 300
+      train.batch_size: 50
+      train.dropout: 0.1
+      train.embedd_size: 100
+      train.epochs: 30
       train.hidden_units:
-      - 8
-      - 4
-      - 1
+      - 50
+      - 128
+      - 128
+      - 64
       train.learning_rate: 0.001
-      train.loss: mean_squared_error
       train.regularization_factor: 0.01
       train.validation_split: 0.2
+      train.vocab_size: 10000
   outs:
-  - path: ./Modeling/model.h5
-    md5: 01d8bf64a5ff2935014135a2e4c45f8b
-  - path: ./Plots/learning_curve_loss.png
-    md5: 79f21f45dd9e0c2353289c05ca7f179a
-  - path: ./Plots/learning_curve_rmse.png
-    md5: ee0fe871890c97ccc335ef439423a1c6
+  - path: ./Modeling/checkpoint
+    md5: 7c1a6f060d24ebb29b6de8f46215368b
+  - path: ./Modeling/text_encoder.pkl
+    md5: 2d24afe718d1d6d30c63e81100bc5283
 prepare_loud:
   cmd: python ./Code/prepare.py ./Data/arabic/loud/mp3 ./Data/arabic/loud/wav
   deps:
@@ -87,9 +104,9 @@ featurize_loud:
   cmd: python ./Code/featurize.py ./Data/arabic/loud/wav ./Data/arabic/loud/features/sound_features.csv
   deps:
   - path: ./Code/featurize.py
-    md5: 5fa738a1abe51095b63aaed0a2777df3
+    md5: 08043f0575500e2d46411a378479a332
   - path: ./Data/arabic/loud/wav
-    md5: cedf0b308243ece2d2bf4bbd06e45544.dir
+    md5: dbf492dfeadc791e7070e990f25f4b75.dir
   outs:
   - path: ./Data/arabic/loud/features/sound_features.csv
     md5: 076efc86554795050e9d3ce1af62d178
@@ -107,9 +124,9 @@ featurize_happy:
   cmd: python ./Code/featurize.py ./Data/arabic/happy/wav ./Data/arabic/happy/features/sound_features.csv
   deps:
   - path: ./Code/featurize.py
-    md5: 5fa738a1abe51095b63aaed0a2777df3
+    md5: 08043f0575500e2d46411a378479a332
   - path: ./Data/arabic/happy/wav
-    md5: 2fb1febeb64ae8cdb89f05f281de9860.dir
+    md5: 40a32c03b24ee41bc8b74049b14965ba.dir
   outs:
   - path: ./Data/arabic/happy/features/sound_features.csv
     md5: fad51886b865daeb7610daea67e929d1
@@ -167,6 +184,8 @@ split_happy_data:
   - path: ./Data/arabic/happy/features/features.csv
     md5: ad495e82c6d27665ade21c10253bc5f5
   outs:
+  - path: ./Data/arabic/happy/prepared_data/x_test.csv
+    md5: 96b918ed53bc8abce5faa07aea6bf8f5
   - path: ./Data/arabic/happy/prepared_data/x_train.csv
     md5: f490a28ddee0c45fa9000fa542691bf3
   - path: ./Data/arabic/happy/prepared_data/y_test.csv
@@ -181,9 +200,70 @@ split_loud_data:
   - path: ./Data/arabic/loud/features/features.csv
     md5: 520613266b24ffc59300e4cd784464ec
   outs:
+  - path: ./Data/arabic/loud/prepared_data/x_test.csv
+    md5: 13d037a90fd25f332221a2fd5faf02bb
   - path: ./Data/arabic/loud/prepared_data/x_train.csv
     md5: c5372269d1aec955b2e87eda5f7fb5cc
   - path: ./Data/arabic/loud/prepared_data/y_test.csv
     md5: 4e20a927916f8341c17ad09381bdca83
   - path: ./Data/arabic/loud/prepared_data/y_train.csv
     md5: 2ead048f8a5ff8b2502b7bacfaf6f5a7
+prepare_sad:
+  cmd: python ./Code/prepare.py ./Data/arabic/sad/mp3 ./Data/arabic/sad/wav
+  deps:
+  - path: ./Code/prepare.py
+    md5: b7448900b1f99707b73624182636b669
+  - path: ./Data/arabic/sad/mp3
+    md5: ebf51039ee70cf278c88b17e50f97c0d.dir
+  outs:
+  - path: ./Data/arabic/sad/wav
+    md5: fdc95985f49e7d84630e7d125de0c7bc.dir
+prepare_sad_lyrics:
+  cmd: python ./Code/prepare_lyrics.py ./Data/arabic/sad/lyrics ./Data/arabic/sad/processed_lyrics
+  deps:
+  - path: ./Code/prepare_lyrics.py
+    md5: 3dc193d5b2b081aea03ad77169d587e9
+  - path: ./Data/arabic/sad/lyrics
+    md5: 3856ea4c06eefff31711d719de9f2aeb.dir
+  outs:
+  - path: ./Data/arabic/sad/processed_lyrics
+    md5: c8e6d5222933694dde207cb5d37020e9.dir
+featurize_sad:
+  cmd: python ./Code/featurize.py ./Data/arabic/sad/wav ./Data/arabic/sad/features/sound_features.csv
+  deps:
+  - path: ./Code/featurize.py
+    md5: 08043f0575500e2d46411a378479a332
+  - path: ./Data/arabic/sad/wav
+    md5: 0cab6f68d9de8782d30a2f8c325ab0c0.dir
+  outs:
+  - path: ./Data/arabic/sad/features/sound_features.csv
+    md5: 1f5cb353df6e7b658485058bd8f137ba
+aggregate_sad_features:
+  cmd: python ./Code/aggregate_features.py ./Data/arabic/sad/features ./Data/arabic/sad/processed_lyrics
+    sad
+  deps:
+  - path: ./Code/aggregate_features.py
+    md5: 4385bf2e5d394a433144baef1977553b
+  - path: ./Data/arabic/sad/features/sound_features.csv
+    md5: 1f5cb353df6e7b658485058bd8f137ba
+  - path: ./Data/arabic/sad/processed_lyrics
+    md5: c8e6d5222933694dde207cb5d37020e9.dir
+  outs:
+  - path: ./Data/arabic/sad/features/features.csv
+    md5: 265c4b1c49e1d98f66b8892b427fda18
+split_sad_data:
+  cmd: python ./Code/split_data.py ./Data/arabic/sad/features/features.csv ./Data/arabic/sad/prepared_data
+  deps:
+  - path: ./Code/split_data.py
+    md5: c2ed6e844477c3142ba6324517ac13ef
+  - path: ./Data/arabic/sad/features/features.csv
+    md5: 265c4b1c49e1d98f66b8892b427fda18
+  outs:
+  - path: ./Data/arabic/sad/prepared_data/x_test.csv
+    md5: d306a4a7faa76d895ecae1c6aa39d727
+  - path: ./Data/arabic/sad/prepared_data/x_train.csv
+    md5: c7e15ae14d8fa611a104cdbc23d4b3a9
+  - path: ./Data/arabic/sad/prepared_data/y_test.csv
+    md5: b5e69a514bb107c6a8b43aa50af6e34a
+  - path: ./Data/arabic/sad/prepared_data/y_train.csv
+    md5: cc76b816cd5a6db96870c43d879fb5aa

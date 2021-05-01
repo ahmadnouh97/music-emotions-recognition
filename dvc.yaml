@@ -15,6 +15,22 @@ stages:
     outs:
     - ./Data/arabic/happy/processed_lyrics
 
+  prepare_sad:
+    cmd: python ./Code/prepare.py ./Data/arabic/sad/mp3 ./Data/arabic/sad/wav
+    deps:
+    - ./Code/prepare.py
+    - ./Data/arabic/sad/mp3
+    outs:
+    - ./Data/arabic/sad/wav
+
+  prepare_sad_lyrics:
+    cmd: python ./Code/prepare_lyrics.py ./Data/arabic/sad/lyrics ./Data/arabic/sad/processed_lyrics
+    deps:
+    - ./Code/prepare_lyrics.py
+    - ./Data/arabic/sad/lyrics
+    outs:
+    - ./Data/arabic/sad/processed_lyrics
+
   prepare_loud:
     cmd: python ./Code/prepare.py ./Data/arabic/loud/mp3 ./Data/arabic/loud/wav
     deps:
@@ -39,6 +55,14 @@ stages:
     outs:
     - ./Data/arabic/happy/features/sound_features.csv
 
+  featurize_sad:
+    cmd: python ./Code/featurize.py ./Data/arabic/sad/wav ./Data/arabic/sad/features/sound_features.csv
+    deps:
+    - ./Code/featurize.py
+    - ./Data/arabic/sad/wav
+    outs:
+    - ./Data/arabic/sad/features/sound_features.csv
+
   featurize_loud:
     cmd: python ./Code/featurize.py ./Data/arabic/loud/wav ./Data/arabic/loud/features/sound_features.csv
     deps:
@@ -56,6 +80,15 @@ stages:
     outs:
       - ./Data/arabic/happy/features/features.csv
 
+  aggregate_sad_features:
+    cmd: python ./Code/aggregate_features.py ./Data/arabic/sad/features ./Data/arabic/sad/processed_lyrics sad
+    deps:
+    - ./Code/aggregate_features.py
+    - ./Data/arabic/sad/features/sound_features.csv
+    - ./Data/arabic/sad/processed_lyrics
+    outs:
+    - ./Data/arabic/sad/features/features.csv
+
   aggregate_loud_features:
     cmd: python ./Code/aggregate_features.py ./Data/arabic/loud/features ./Data/arabic/loud/processed_lyrics loud
     deps:
@@ -72,9 +105,20 @@ stages:
     - ./Data/arabic/happy/features/features.csv
     outs:
     - ./Data/arabic/happy/prepared_data/x_train.csv
-    - ./Data/arabic/happy/prepared_data/x_train.csv
+    - ./Data/arabic/happy/prepared_data/x_test.csv
     - ./Data/arabic/happy/prepared_data/y_test.csv
     - ./Data/arabic/happy/prepared_data/y_train.csv
+
+  split_sad_data:
+    cmd: python ./Code/split_data.py ./Data/arabic/sad/features/features.csv ./Data/arabic/sad/prepared_data
+    deps:
+    - ./Code/split_data.py
+    - ./Data/arabic/sad/features/features.csv
+    outs:
+    - ./Data/arabic/sad/prepared_data/x_train.csv
+    - ./Data/arabic/sad/prepared_data/x_test.csv
+    - ./Data/arabic/sad/prepared_data/y_test.csv
+    - ./Data/arabic/sad/prepared_data/y_train.csv
 
   split_loud_data:
     cmd: python ./Code/split_data.py ./Data/arabic/loud/features/features.csv ./Data/arabic/loud/prepared_data
@@ -83,6 +127,36 @@ stages:
     - ./Data/arabic/loud/features/features.csv
     outs:
     - ./Data/arabic/loud/prepared_data/x_train.csv
-    - ./Data/arabic/loud/prepared_data/x_train.csv
+    - ./Data/arabic/loud/prepared_data/x_test.csv
     - ./Data/arabic/loud/prepared_data/y_test.csv
     - ./Data/arabic/loud/prepared_data/y_train.csv
+
+  train:
+    cmd: python ./Code/train.py
+    params:
+    - train.vocab_size
+    - train.embedd_size
+    - train.learning_rate
+    - train.dropout
+    - train.regularization_factor
+    - train.hidden_units
+    - train.batch_size
+    - train.epochs
+    - train.validation_split
+    deps:
+    - ./Code/train.py
+    - ./Data/arabic/happy/prepared_data/x_train.csv
+    - ./Data/arabic/happy/prepared_data/x_test.csv
+    - ./Data/arabic/happy/prepared_data/y_test.csv
+    - ./Data/arabic/happy/prepared_data/y_train.csv
+    - ./Data/arabic/loud/prepared_data/x_train.csv
+    - ./Data/arabic/loud/prepared_data/x_test.csv
+    - ./Data/arabic/loud/prepared_data/y_test.csv
+    - ./Data/arabic/loud/prepared_data/y_train.csv
+    - ./Data/arabic/sad/prepared_data/x_train.csv
+    - ./Data/arabic/sad/prepared_data/x_test.csv
+    - ./Data/arabic/sad/prepared_data/y_test.csv
+    - ./Data/arabic/sad/prepared_data/y_train.csv
+    outs:
+    - ./Modeling/checkpoint
+    - ./Modeling/text_encoder.pkl

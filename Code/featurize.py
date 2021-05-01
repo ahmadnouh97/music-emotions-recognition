@@ -23,13 +23,18 @@ def extract_features(files, extract_to, verbose=True):
     if verbose:
         print('Start extracting features from songs..\nPlease be patient :)')
 
-    for file in tqdm(files):
-        df = smile.process_file(str(SONGS_WAV_PATH / file), channel=1)
-        dot_index = file.rfind('.')
-        extension = file[dot_index:]
-        filename = file[:len(file) - len(extension)]
-        df['music_id'] = filename
-        features_df = pd.concat([features_df, df], ignore_index=True)
+    with open(str(SONGS_WAV_PATH / 'failed.txt'), 'w', encoding="utf-8") as file_stream:
+        for file in tqdm(files):
+            try:
+                df = smile.process_file(str(SONGS_WAV_PATH / file), channel=1)
+            except ValueError:
+                df = smile.process_file(str(SONGS_WAV_PATH / file), channel=0)
+            finally:
+                dot_index = file.rfind('.')
+                extension = file[dot_index:]
+                filename = file[:len(file) - len(extension)]
+                df['music_id'] = filename
+                features_df = pd.concat([features_df, df], ignore_index=True)
 
     features_df.to_csv(extract_to, index=False)
 
