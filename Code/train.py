@@ -1,33 +1,24 @@
 import sys
 import yaml
+import os
+import pickle
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import pickle
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
-import tensorflow_addons as tfa
-tf.get_logger().setLevel('WARNING')
 
+tf.get_logger().setLevel('WARNING')
+#
 sys.path.append(str(Path.absolute(self=Path('./'))))
 from Code.config import Config
-
+import Code.modeling as modeling
+import Code.preprocessing as preprocessing
 
 params = yaml.safe_load(open(Config.PARAMS_PATH))['train']
-
-vocab_size = int(params['vocab_size'])
-embedd_size = int(params['embedd_size'])
-learning_rate = float(params['learning_rate'])
-regularization_factor = float(params['regularization_factor'])
-dropout_factor = float(params['dropout'])
-hidden_units = params['hidden_units']
-batch_size = int(params['batch_size'])
-epochs = int(params['epochs'])
-validation_split = float(params['validation_split'])
-CLASS_NUM = 3
-
 physical_devices = tf.config.list_physical_devices("GPU")
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
 
 def read_data():
     x_train_happy = pd.read_csv(str(Config.HAPPY_DATA / 'x_train.csv'), index_col=False)
@@ -55,93 +46,56 @@ def read_data():
     return x_train, y_train
 
 
-def fit_encoder(lyrics):
-    encoder = tf.keras.layers.experimental.preprocessing.TextVectorization(
-        max_tokens=vocab_size
-    )
-
-    encoder.adapt(lyrics)
-    return encoder
-
-
-def build_model(encoder, features_num):
-    lyrics_input = tf.keras.Input(shape=(1,), dtype=tf.string, name='lyrics_input')
-    encoding_layer = encoder(lyrics_input)
-    embedding_layer = tf.keras.layers.Embedding(
-        input_dim=vocab_size + 1,
-        output_dim=embedd_size,
-        # Use masking to handle the variable sequence lengths
-        mask_zero=True)(encoding_layer)
-
-    bi_lstm_layer = tf.keras.layers.Bidirectional(
-        tf.keras.layers.LSTM(int(hidden_units[0]),
-                             recurrent_dropout=0.1,
-                             kernel_regularizer=tf.keras.regularizers.L1L2(regularization_factor),
-                             activity_regularizer=tf.keras.regularizers.L1L2(regularization_factor)),)(embedding_layer)
-
-    sound_features_input = tf.keras.Input(shape=(features_num,), name='sound_input')
-
-    dense_layer_0 = tf.keras.layers.Dense(int(hidden_units[1]), activation='sigmoid')(sound_features_input)
-
-    concat_layer = tf.keras.layers.Concatenate(axis=1)([dense_layer_0, bi_lstm_layer])
-
-    dense_layer_1 = tf.keras.layers.Dense(int(hidden_units[2]), activation='relu',
-                                          kernel_regularizer=tf.keras.regularizers.L1L2(regularization_factor),
-                                          activity_regularizer=tf.keras.regularizers.L1L2(regularization_factor)
-                                          )(concat_layer)
-
-    dropout_layer = tf.keras.layers.Dropout(dropout_factor)(dense_layer_1)
-
-    dense_layer_2 = tf.keras.layers.Dense(int(hidden_units[3]), activation='relu')(dropout_layer)
-
-    output_layer = tf.keras.layers.Dense(CLASS_NUM, activation='softmax')(dense_layer_2)
-
-    model = tf.keras.models.Model(inputs=[lyrics_input, sound_features_input], outputs=output_layer)
-
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=tf.keras.optimizers.Adam(learning_rate),
-                  metrics=[tfa.metrics.F1Score(num_classes=CLASS_NUM)])
-
-    return model
-
-
-
 def main():
     x_train, y_train = read_data()
     lyrics = np.array(list(x_train['lyrics']))
     labels = np.array(list(y_train['label']))
 
     sound_features = np.array(x_train[[col for col in x_train.columns if col != 'lyrics']])
-    encoder = fit_encoder(lyrics)
 
-    model = build_model(encoder, len(x_train.columns)-1)
+    encoder, text_sequences = preprocessing.fit_encoder(lyrics, vocab_size=int(params['vocab_size']))
+    print(f'word_index = {len(encoder.get("word_index"))}')
+    sequences = preprocessing.text_to_sequences(text_sequences, encoder)
+    print(f'sequences = {encoder["max_seq_len"]}')
+
+    sequences = preprocessing.pad_seqs(sequences, max_seq_len=encoder['max_seq_len'])
+    preprocessing.save_encoder(str(Config.MODEL_PATH / 'text_encoder.pkl'), encoder)
+    vocab_size = encoder['vocab_size']
+    max_seq_len = encoder['max_seq_len']
+    # word_index = encoder['word_index']
+    # index_word = encoder['index_word']
+    # tokenizer_conditions = encoder['tokenizer_conditions']
+    # tokenizer_morphs = encoder['tokenizer_morphs']
+    model = modeling.build_model(len(x_train.columns) - 1, vocab_size, max_seq_len)
+    tf.keras.utils.plot_model(model, to_file=str(Config.PLOTS_PATH / 'model_architecture.png'), dpi=128, show_shapes=True)
+
     label_encoder = LabelEncoder()
     label_encoder.fit(labels)
     labels = label_encoder.transform(labels)
-    labels = tf.keras.utils.to_categorical(labels, CLASS_NUM)
+    labels = tf.keras.utils.to_categorical(labels, modeling.CLASS_NUM)
 
-    checkpoint_filepath = str(Config.MODEL_PATH / 'checkpoint')
-    model.fit([lyrics, sound_features],
+    checkpoint_path = str(Config.MODEL_PATH / Path('checkpoint') / 'cp.ckpt')
+    checkpoint_dir = os.path.dirname(checkpoint_path)
+
+    model.fit([sequences, sound_features],
               labels,
-              validation_split=validation_split,
-              epochs=epochs,
-              batch_size=batch_size,
+              validation_split=modeling.validation_split,
+              epochs=modeling.epochs,
+              batch_size=modeling.batch_size,
               callbacks=[
                   tf.keras.callbacks.ModelCheckpoint(
-                      filepath=checkpoint_filepath,
-                      save_weights_only=True,
+                      filepath=checkpoint_path,
                       monitor='val_loss',
                       mode='min',
-                      save_best_only=True)
+                      save_best_only=True
+                  )
               ])
 
-    print('save text encoder..')
-    pickle.dump({'config': encoder.get_config(),
-                 'weights': encoder.get_weights()}
-                , open(str(Config.MODEL_PATH / 'text_encoder.pkl'), "wb"))
-
-
-
+    # print('save text encoder..')
+    # pickle.dump({'config': encoder.get_config(),
+    #              'weights': encoder.get_weights(),
+    #              'vocab': encoder.get_vocabulary()}
+    #             , open(str(Config.MODEL_PATH / 'text_encoder.pkl'), "wb"))
 
 
 main()

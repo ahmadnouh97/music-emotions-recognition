@@ -4,7 +4,7 @@ train:
   learning_rate: 0.001
   dropout: 0.1
   regularization_factor: 0.01
-  hidden_units: [50, 128, 128, 64]
-  batch_size: 50
-  epochs: 30
+  hidden_units: [50, 64, 64, 32]
+  batch_size: 10
+  epochs: 1
   validation_split: 0.2

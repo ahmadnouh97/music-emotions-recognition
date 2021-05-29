@@ -45,7 +45,7 @@ train:
   cmd: python ./Code/train.py
   deps:
   - path: ./Code/train.py
-    md5: 1188faf461ce79446bf03cb82c105172
+    md5: 532bba5940ad1a8e30218153f59beb46
   - path: ./Data/arabic/happy/prepared_data/x_test.csv
     md5: 96b918ed53bc8abce5faa07aea6bf8f5
   - path: ./Data/arabic/happy/prepared_data/x_train.csv
@@ -72,24 +72,24 @@ train:
     md5: cc76b816cd5a6db96870c43d879fb5aa
   params:
     params.yaml:
-      train.batch_size: 50
+      train.batch_size: 10
       train.dropout: 0.1
       train.embedd_size: 100
-      train.epochs: 30
+      train.epochs: 1
       train.hidden_units:
       - 50
-      - 128
-      - 128
       - 64
+      - 64
+      - 32
       train.learning_rate: 0.001
       train.regularization_factor: 0.01
       train.validation_split: 0.2
       train.vocab_size: 10000
   outs:
   - path: ./Modeling/checkpoint
-    md5: 7c1a6f060d24ebb29b6de8f46215368b
+    md5: 1ca659703a6604c29a934ed125dfaa51.dir
   - path: ./Modeling/text_encoder.pkl
-    md5: 2d24afe718d1d6d30c63e81100bc5283
+    md5: 5bdc96f8666133010a65948c00d6f2ec
 prepare_loud:
   cmd: python ./Code/prepare.py ./Data/arabic/loud/mp3 ./Data/arabic/loud/wav
   deps:
