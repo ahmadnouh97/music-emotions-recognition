@@ -1,6 +1,6 @@
 train:
-  loss: "mean_absolute_error"
-  learning_rate: 0.003
+  loss: mean_absolute_error
+  learning_rate: 0.001
   regularization_factor: 0.01
   hidden_units: [8, 4, 1]
   batch_size: 10

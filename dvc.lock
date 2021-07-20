@@ -1,84 +1,100 @@
-prepare:
-  cmd: python ./Code/prepare.py ./Data/PMEmo2019/songs ./Data/PMEmo2019/songs_wav
-  deps:
-  - path: ./Code/prepare.py
-    md5: b7448900b1f99707b73624182636b669
-  - path: ./Data/PMEmo2019/songs
-    md5: 7ffae63872f5dd0c2385b931b1c1c83a.dir
-  outs:
-  - path: ./Data/PMEmo2019/songs_wav
-    md5: e365883a766af9d209a4268c6daaa32c.dir
-featurize:
-  cmd: python ./Code/featurize.py ./Data/PMEmo2019/songs_wav ./Data/PMEmo2019/features/static_features.csv
-  deps:
-  - path: ./Code/featurize.py
-    md5: 8423b9f8700af33fb967e679e766bbeb
-  - path: ./Data/PMEmo2019/songs_wav
-    md5: e365883a766af9d209a4268c6daaa32c.dir
-  outs:
-  - path: ./Data/PMEmo2019/features/static_features.csv
-    md5: ec4123dfd06d7b034b6c6ef7d7f31843
-split_data:
-  cmd: python ./Code/split_data.py ./Data/PMEmo2019/features/static_features.csv ./Data/PMEmo2019/annotations/static_annotations.csv
-  deps:
-  - path: ./Code/split_data.py
-    md5: c4a4453b8d137a94dee5adabc459b6e5
-  - path: ./Data/PMEmo2019/annotations/static_annotations.csv
-    md5: 742be2e6aeeb16396d09b7f5eff47bdc
-  - path: ./Data/PMEmo2019/features/static_features.csv
-    md5: ec4123dfd06d7b034b6c6ef7d7f31843
-  outs:
-  - path: ./Data/PMEmo2019/prepared/x_test.pkl
-    md5: b462536fea0e65291ceedeaae81c12c3
-  - path: ./Data/PMEmo2019/prepared/x_train.pkl
-    md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
-  - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 5798f4fd60e3b170f23a8121b6dab057
-  - path: ./Data/PMEmo2019/prepared/y_train.pkl
-    md5: 90d6a869796b639eb9287025fad8076a
-train:
-  cmd: python ./Code/train.py
-  deps:
-  - path: ./Code/train.py
-    md5: 103b371bea22dbdf373a7535ad4653ca
-  - path: ./Data/PMEmo2019/prepared/x_test.pkl
-    md5: b462536fea0e65291ceedeaae81c12c3
-  - path: ./Data/PMEmo2019/prepared/x_train.pkl
-    md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
-  - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 5798f4fd60e3b170f23a8121b6dab057
-  - path: ./Data/PMEmo2019/prepared/y_train.pkl
-    md5: 90d6a869796b639eb9287025fad8076a
-  params:
-    params.yaml:
-      train.batch_size: 10
-      train.epochs: 300
-      train.hidden_units:
-      - 8
-      - 4
-      - 1
-      train.learning_rate: 0.003
-      train.loss: mean_absolute_error
-      train.regularization_factor: 0.01
-      train.validation_split: 0.2
-  outs:
-  - path: ./Modeling/arousal_model.h5
-    md5: f168ee75fd04e15b74550be3ea896a24
-  - path: ./Plots/learning_curve_loss.png
-    md5: 664b69a7a062be1734ac5648d3d86663
-  - path: ./Plots/learning_curve_rmse.png
-    md5: 193a54439a4bca1d7e70d79460f72127
-evaluate:
-  cmd: python ./Code/evaluate.py ./Metrics/metrics.json
-  deps:
-  - path: ./Code/evaluate.py
-    md5: 969dcba57ace8ae10874ec1d7ccc4976
-  - path: ./Data/PMEmo2019/prepared/x_test.pkl
-    md5: b462536fea0e65291ceedeaae81c12c3
-  - path: ./Data/PMEmo2019/prepared/y_test.pkl
-    md5: 5798f4fd60e3b170f23a8121b6dab057
-  - path: ./Modeling/arousal_model.h5
-    md5: cbd42761ed836ffae7503b0c06b8d3b9
-  outs:
-  - path: ./Metrics/metrics.json
-    md5: 50f6bcbe9b2500eb21140d2b44af9d07
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python ./Code/prepare.py ./Data/PMEmo2019/songs ./Data/PMEmo2019/songs_wav
+    deps:
+    - path: ./Code/prepare.py
+      md5: b7448900b1f99707b73624182636b669
+    - path: ./Data/PMEmo2019/songs
+      md5: 7ffae63872f5dd0c2385b931b1c1c83a.dir
+    outs:
+    - path: ./Data/PMEmo2019/songs_wav
+      md5: e365883a766af9d209a4268c6daaa32c.dir
+  featurize:
+    cmd: python ./Code/featurize.py ./Data/PMEmo2019/songs_wav ./Data/PMEmo2019/features/static_features.csv
+    deps:
+    - path: ./Code/featurize.py
+      md5: 8423b9f8700af33fb967e679e766bbeb
+    - path: ./Data/PMEmo2019/songs_wav
+      md5: e365883a766af9d209a4268c6daaa32c.dir
+    outs:
+    - path: ./Data/PMEmo2019/features/static_features.csv
+      md5: ec4123dfd06d7b034b6c6ef7d7f31843
+  split_data:
+    cmd: python ./Code/split_data.py ./Data/PMEmo2019/features/static_features.csv
+      ./Data/PMEmo2019/annotations/static_annotations.csv
+    deps:
+    - path: ./Code/split_data.py
+      md5: c4a4453b8d137a94dee5adabc459b6e5
+    - path: ./Data/PMEmo2019/annotations/static_annotations.csv
+      md5: 742be2e6aeeb16396d09b7f5eff47bdc
+    - path: ./Data/PMEmo2019/features/static_features.csv
+      md5: ec4123dfd06d7b034b6c6ef7d7f31843
+    outs:
+    - path: ./Data/PMEmo2019/prepared/x_test.pkl
+      md5: b462536fea0e65291ceedeaae81c12c3
+    - path: ./Data/PMEmo2019/prepared/x_train.pkl
+      md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
+    - path: ./Data/PMEmo2019/prepared/y_test.pkl
+      md5: 5798f4fd60e3b170f23a8121b6dab057
+    - path: ./Data/PMEmo2019/prepared/y_train.pkl
+      md5: 90d6a869796b639eb9287025fad8076a
+  train:
+    cmd: python ./Code/train.py
+    deps:
+    - path: ./Code/train.py
+      md5: dfa7714e7b803e07ed2fe417405d5335
+      size: 3741
+    - path: ./Data/PMEmo2019/prepared/x_test.pkl
+      md5: b462536fea0e65291ceedeaae81c12c3
+      size: 12950097
+    - path: ./Data/PMEmo2019/prepared/x_train.pkl
+      md5: b21f2d7967ae1e6bd1c8be14dcc9bffa
+      size: 26154954
+    - path: ./Data/PMEmo2019/prepared/y_test.pkl
+      md5: 5798f4fd60e3b170f23a8121b6dab057
+      size: 2192
+    - path: ./Data/PMEmo2019/prepared/y_train.pkl
+      md5: 90d6a869796b639eb9287025fad8076a
+      size: 4265
+    params:
+      params.yaml:
+        train.batch_size: 10
+        train.epochs: 300
+        train.hidden_units:
+        - 8
+        - 4
+        - 1
+        train.learning_rate: 0.001
+        train.loss: mean_absolute_error
+        train.regularization_factor: 0.01
+        train.validation_split: 0.2
+    outs:
+    - path: ./Modeling/arousal_model.h5
+      md5: 5baeebfa9a97e56bcc4682ee1d857534
+      size: 645216
+    - path: ./Plots/learning_curve_loss.png
+      md5: f599cb768ceed13941b46f4d74b34eaf
+      size: 33633
+    - path: ./Plots/learning_curve_rmse.png
+      md5: e37c6f79e04f1219c3bff112096afe8b
+      size: 35407
+  evaluate:
+    cmd: python ./Code/evaluate.py ./Metrics/metrics.json
+    deps:
+    - path: ./Code/evaluate.py
+      md5: 57856620df15595e8aa06c01de09fad7
+      size: 1750
+    - path: ./Data/PMEmo2019/prepared/x_test.pkl
+      md5: b462536fea0e65291ceedeaae81c12c3
+      size: 12950097
+    - path: ./Data/PMEmo2019/prepared/y_test.pkl
+      md5: 5798f4fd60e3b170f23a8121b6dab057
+      size: 2192
+    - path: ./Modeling/arousal_model.h5
+      md5: 23a0cb21fc7d6b177be1e832531b5889
+      size: 645216
+    outs:
+    - path: ./Metrics/metrics.json
+      md5: 66662143e90d87afc852fcab8f617e2b
+      size: 115

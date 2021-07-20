@@ -1,10 +1,10 @@
 from pathlib import Path
-import keras.layers as layers
-import keras.optimizers as optimizers
-import keras.metrics as metrics
-import keras.regularizers as regularizers
-from keras.models import Model
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+import tensorflow.keras.layers as layers
+import tensorflow.keras.optimizers as optimizers
+import tensorflow.keras.metrics as metrics
+import tensorflow.keras.regularizers as regularizers
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import sys
 import yaml
@@ -37,8 +37,9 @@ def train(model: Model, x_train, y_train):
     model_check_point_cb = ModelCheckpoint(filepath=str(Config.MODEL_FILE),
                                            monitor='val_loss',
                                            save_best_only=True)
-    early_stop_cb = EarlyStopping(monitor='val_loss', mode='min', min_delta=0.00001, patience=8)
-    reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss', mode='min', patience=2, factor=0.1)
+    early_stop_cb = EarlyStopping(monitor='val_loss', mode='min',
+                                  min_delta=0.00001, patience=8, restore_best_weights=True)
+    # reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss', mode='min', patience=2, factor=0.1)
     history = model.fit(
         x=x_train,
         y=y_train,
@@ -48,8 +49,8 @@ def train(model: Model, x_train, y_train):
         verbose=1,
         callbacks=[
             model_check_point_cb,
-            early_stop_cb,
-            reduce_lr_cb
+            early_stop_cb
+            # reduce_lr_cb
         ]
     )
     return history
