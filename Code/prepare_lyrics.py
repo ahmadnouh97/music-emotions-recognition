@@ -16,15 +16,16 @@ ARABIC_LETTERS = [
 NON_ARABIC_LETTER = re.compile('[^' + ''.join(ARABIC_LETTERS + [' ']) + ']')
 
 
-
 def read_txt_file(filename: str):
     with open(filename, 'r', encoding="utf8") as file:
         text = file.read()
     return text
 
+
 def save_txt_file(filename: str, text: str):
     with open(filename, 'w', encoding="utf8") as file:
         file.write(text)
+
 
 def preprocessing(text: str):
     paragraphs = text.split('\n')
@@ -46,6 +47,7 @@ def preprocessing(text: str):
 
     return "\n".join(processed_paragraphs)
 
+
 def process_lyrics(files: list, verbose=True):
     if verbose:
         print('Start preprocessing lyrics files..\nPlease be patient :)')
@@ -54,7 +56,6 @@ def process_lyrics(files: list, verbose=True):
         lyrics = read_txt_file(str(LYRICS_PATH / file))
         processed_lyrics = preprocessing(lyrics)
         save_txt_file(str(PROCESSED_LYRICS_PATH / file), processed_lyrics)
-
 
 
 LYRICS_PATH = Path(sys.argv[1])

@@ -20,9 +20,9 @@ def convert_to_wav(files: list, verbose=True):
 
         src = str(SONGS_PATH / file)
         dist = str(SONGS_WAV_PATH / filename) + '.wav'
-
-        sound = AudioSegment.from_mp3(src)
-        sound.export(dist, format='wav')
+        if not os.path.exists(dist):
+            sound = AudioSegment.from_mp3(src)
+            sound.export(dist, format='wav')
 
 
 AudioSegment.converter = "ffmpeg"

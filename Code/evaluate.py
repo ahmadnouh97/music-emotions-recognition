@@ -19,16 +19,16 @@ CLASS_NUM = modeling.CLASS_NUM
 
 
 def read_data():
-    x_test_happy = pd.read_csv(str(Config.HAPPY_DATA / 'x_test.csv'), index_col=False)
-    x_test_sad = pd.read_csv(str(Config.SAD_DATA / 'x_test.csv'), index_col=False)
-    x_test_loud = pd.read_csv(str(Config.LOUD_DATA / 'x_test.csv'), index_col=False)
+    happy_features = pd.read_csv(str(Config.HAPPY_DATA / 'features.csv'), index_col=False)
+    sad_features = pd.read_csv(str(Config.SAD_DATA / 'features.csv'), index_col=False)
 
-    y_test_happy = pd.read_csv(str(Config.HAPPY_DATA / 'y_test.csv'), index_col=False)
-    y_test_sad = pd.read_csv(str(Config.SAD_DATA / 'y_test.csv'), index_col=False)
-    y_test_loud = pd.read_csv(str(Config.LOUD_DATA / 'y_test.csv'), index_col=False)
+    x_test_sad = pd.read_csv(str(Config.SAD_DATA / 'features.csv'), index_col=False)
 
-    test_features = pd.concat([x_test_happy, x_test_sad, x_test_loud])
-    test_labels = pd.concat([y_test_happy, y_test_sad, y_test_loud])
+    y_test_happy = pd.read_csv(str(Config.HAPPY_DATA / 'features.csv'), index_col=False)
+    y_test_sad = pd.read_csv(str(Config.SAD_DATA / 'features.csv'), index_col=False)
+
+    test_features = pd.concat([x_test_happy, x_test_sad])
+    test_labels = pd.concat([y_test_happy, y_test_sad])
 
     test_features.reset_index(drop=True, inplace=True)
     test_labels.reset_index(drop=True, inplace=True)
